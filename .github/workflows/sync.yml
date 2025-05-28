@@ -1,9 +1,9 @@
-name: Sync with upstream
+name: Sync with upstream (debug)
 
 on:
   schedule:
-    - cron: '0 2 * * *'   # every day at 2 AM UTC
-  workflow_dispatch:       # manual trigger enabled
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 jobs:
   sync:
@@ -16,11 +16,19 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
+      - name: Show git status before changes
+        run: git status && git branch -a && git remote -v
+
       - name: Add upstream remote
         run: git remote add upstream https://github.com/lyfe00011/levanter.git
 
-      - name: Fetch upstream changes
+      - name: Fetch upstream
         run: git fetch upstream
+
+      - name: Show git log of main and upstream/main
+        run: |
+          git log --oneline -5 main
+          git log --oneline -5 upstream/main
 
       - name: Reset main branch to upstream/main
         run: |
